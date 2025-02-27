@@ -1,14 +1,18 @@
 require("dotenv").config();
 
+const cors = require("cors");
 const express = require("express");
-const emailRoutes = require("./routes/emailRoutes");
 
 const app = express();
 app.use(express.json());
 
-const cors = require("cors");
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"] // Required headers
+}));
 
+const emailRoutes = require("./routes/emailRoutes");
 app.use("/api", emailRoutes);
 
 const PORT = process.env.PORT || 3001;
