@@ -6,12 +6,16 @@ const sendEmail = async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      secure: false, // Set to `true` for port 465, `false` for 587
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false,
       auth: {
+        type: "OAuth2",
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        clientId: process.env.OAUTH_CLIENT_ID,
+        clientSecret: process.env.OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+        accessToken: process.env.OAUTH_ACCESS_TOKEN,
       },
     });
 
