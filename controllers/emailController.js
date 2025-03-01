@@ -49,12 +49,14 @@ const sendScoreEmail = async (req, res) => {
     }
 
     let transporter = nodemailer.createTransport({
-      service: "Gmail",
+      host: process.env.SMTP_SERVER,   // SMTP server from .env
+      port: process.env.SMTP_PORT,     // SMTP port from .env
+      secure: false, // `true` for port 465, `false` for 587
       auth: {
         user: userEmail,
-        pass: userPassword, // Use the app password from your .env
+        pass: userPassword,
       },
-    });
+    });    
 
     // Format the email content
     const emailContent = `
