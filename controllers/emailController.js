@@ -9,6 +9,10 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER, // Gmail Address
       pass: process.env.EMAIL_PASS, // App Password (Generated from Google Account)
     },
+    secure: false,
+    tls: {
+      rejectUnauthorized: false, // Prevents TLS errors
+    },
   });
 };
 
@@ -17,10 +21,14 @@ const sendEmail = async (req, res) => {
   const { firstName, lastName, email, messageContent } = req.body;
 
   try {
+    // Debugging: Check if environment variables are loaded
+    console.log("Email User:", process.env.EMAIL_USER);
+    console.log("Email Pass:", process.env.EMAIL_PASS ? "Loaded" : "Not Loaded");
+
     const transporter = createTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Security App" <${process.env.EMAIL_USER}>`,
       to: process.env.RECEIVING_EMAIL,
       subject: `New Feedback from ${firstName} ${lastName}`,
       text: `User Email: ${email}\n\nMessage:\n${messageContent}`,
@@ -29,7 +37,7 @@ const sendEmail = async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.status(200).send("Email sent successfully!");
   } catch (error) {
-    console.error("Error sending email:", error.message);
+    console.error("Error sending email:", error);
     res.status(500).json({ message: "Error sending email", error: error.message });
   }
 };
@@ -55,7 +63,7 @@ const sendScoreEmail = async (req, res) => {
     `;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Security App" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your Security Score Report",
       html: emailContent,
@@ -64,7 +72,7 @@ const sendScoreEmail = async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.status(200).send("Email sent successfully!");
   } catch (error) {
-    console.error("Error sending email:", error.message);
+    console.error("Error sending email:", error);
     res.status(500).json({ message: "Error sending email", error: error.message });
   }
 };
