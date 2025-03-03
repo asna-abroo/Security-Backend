@@ -1,23 +1,23 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
+// Function to create a transporter using Gmail
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER, // Gmail Address
+      pass: process.env.EMAIL_PASS, // App Password (Generated from Google Account)
+    },
+  });
+};
+
+// Send feedback email
 const sendEmail = async (req, res) => {
   const { firstName, lastName, email, messageContent } = req.body;
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.office365.com",
-      port: 587,
-      secure: false,
-      auth: {
-        type: "OAuth2",
-        user: process.env.EMAIL_USER,
-        clientId: process.env.OAUTH_CLIENT_ID,
-        clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
-        accessToken: process.env.OAUTH_ACCESS_TOKEN,
-      },
-    });
+    const transporter = createTransporter();
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -34,20 +34,14 @@ const sendEmail = async (req, res) => {
   }
 };
 
+// Send security score email
 const sendScoreEmail = async (req, res) => {
   const { email, scores, totalPercentage } = req.body;
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    const transporter = createTransporter();
 
+    // Generating HTML content for the email
     const emailContent = `
       <h1>Your Security Score Report</h1>
       <p>Your overall security score is: <strong>${totalPercentage}%</strong></p>
